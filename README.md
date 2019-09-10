@@ -3,7 +3,6 @@
 FastNN（Fast Neural Networks）是一个基于[PAISoar](https://yq.aliyun.com/articles/705132)实现的分布式训练的基础算法库，当前FastNN只包括计算机视觉的部分经典模型，后续会逐步开放NLP等领域的State-of-Art模型。如需在机器学习平台PAI（Platform of Artificial Intelligence）试用FastNN分布式训练服务，可访问[PAI平台官方主页](https://data.aliyun.com/product/learn?spm=5176.12825654.eofdhaal5.143.2cc52c4af9oxZf)开通，即可在PAI Studio或DSW-notebook上提交机器学习任务，具体操作流程可参考[TensorFlow使用手册](https://help.aliyun.com/document_detail/49571.html?spm=a2c4g.11186623.6.579.10501312JxztvO)。
 
 FastNN功能简介如下：
-如需在机器学习平台PAI（Platform of Artificial Intelligence）试用FastNN分布式训练服务，可访问[PAI平台官方主页](https://data.aliyun.com/product/learn?spm=5176.12825654.eofdhaal5.143.2cc52c4af9oxZf)开通，即可在PAI Studio或DSW-notebook上提交机器学习任务，具体操作流程可参考[TensorFlow使用手册](https://help.aliyun.com/document_detail/49571.html?spm=a2c4g.11186623.6.579.10501312JxztvO)。
 * 模型类别
 
     a.部分经典计算机视觉模型，包括inception、resnet、mobilenet、vgg、alexnet、nasnet等；
