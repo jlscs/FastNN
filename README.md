@@ -23,7 +23,8 @@ FastNN（Fast Neural Networks）是一个基于[PAISoar](https://yq.aliyun.com/a
 目前FastNN只包括计算机视觉的部分经典模型，后续会逐步开放NLP等领域的State-of-Art模型。如需试用机器学习平台PAI（Platform of Artificial Intelligence）服务，可访问[PAI平台官方主页](https://data.aliyun.com/product/learn?spm=5176.12825654.eofdhaal5.143.2cc52c4af9oxZf)开通，即可在PAI Studio或DSW-notebook上提交机器学习任务，具体操作流程可参考[TensorFlow使用手册](https://help.aliyun.com/document_detail/49571.html?spm=a2c4g.11186623.6.579.10501312JxztvO)。
 
 我们针对ResNet-v1-50模型上在弹内弹外集群P100上进行了大规模测试。从测试数据来看，PAISoar加速效果都非常理想，都能够取得接近线性scale的加速效果。
-![resnet_v1_50](https://intranetproxy.alipay.com/skylark/lark/0/2019/png/62136/1566391007222-82bea78a-4462-4540-b6af-bca9ae9de74c.png)
+
+![resnet_v1_50](https://pai-online.oss-cn-shanghai.aliyuncs.com/fastnn-data/readme/resnet_v1_50.png)
 
 ## 2.  数据准备
 为了方便试用FastNN算法库image_models目录下的CV模型，我们准备好了一些公开数据集及其相应download_and_convert脚本，包括图像数据cifar10、mnist以及flowers。
@@ -64,10 +65,10 @@ TRAIN_FILES=cifar10_train.tfrecord
 python train_image_classifiers.py \
 	--task_type=pretrain \ 
 	--enable_paisoar=False \
-    --dataset_name=cifar10 \
-    --train_files=${TRAIN_FILES} \
-    --dataset_dir=${DATASET_DIR} \
-    --model_name=resnet_v1_50
+	--dataset_name=cifar10 \
+	--train_files=${TRAIN_FILES} \
+	--dataset_dir=${DATASET_DIR} \
+	--model_name=resnet_v1_50
 ```
 #### 3.1.2 Finetune脚本
 
@@ -79,12 +80,12 @@ TRAIN_FILES=cifar10_train.tfrecord
 python train_image_classifiers.py \
 	--task_type=finetune \
 	--enable_paisoar=False \
-    --dataset_name=cifar10 \
-    --train_files=${TRAIN_FILES} \
-    --dataset_dir=${DATASET_DIR} \
-    --model_name=resnet_v1_50 \
-    --model_dir=${MODEL_DIR} \
-    --ckpt_file_name=${CKPT_FILE_NAME}
+	--dataset_name=cifar10 \
+	--train_files=${TRAIN_FILES} \
+	--dataset_dir=${DATASET_DIR} \
+	--model_name=resnet_v1_50 \
+	--model_dir=${MODEL_DIR} \
+	--ckpt_file_name=${CKPT_FILE_NAME}
 ```
 
 ### 3.2 PAI平台运行
@@ -202,12 +203,12 @@ python train_image_classifiers.py \
                 FLAGS.model_name or FLAGS.preprocessing_name,
                 is_training=(FLAGS.task_type in ['pretrain', 'finetune']))
 - 用户指定dataset_name，选择正确的tfrecord格式，同步调用preprocess_fn解析数据集得到数据dataset_iterator;
-	dataset_iterator = dataset_factory.get_dataset_iterator(FLAGS.dataset_name,
+    dataset_iterator = dataset_factory.get_dataset_iterator(FLAGS.dataset_name,
                                                             train_image_size,
                                                             preprocessing_fn,
                                                             data_sources,
 - 根据network_fn、dataset_iterator，定义计算loss的函数loss_fn：
-  	def loss_fn():
+    def loss_fn():
     	with tf.device('/cpu:0'):
       		images, labels = dataset_iterator.get_next()
         logits, end_points = network_fn(images)
@@ -216,8 +217,8 @@ python train_image_classifiers.py \
           loss += tf.losses.sparse_softmax_cross_entropy(labels=labels, logits=tf.cast(end_points['AuxLogits'], tf.float32), weights=0.4)
         return loss
 - 调用PAI-Soar API封装loss_fn、tf原生optimizer
-	opt = paisoar.ReplicatedVarsOptimizer(optimizer, clip_norm=FLAGS.max_gradient_norm)
-	loss = optimizer.compute_loss(loss_fn, loss_scale=FLAGS.loss_scale)
+    opt = paisoar.ReplicatedVarsOptimizer(optimizer, clip_norm=FLAGS.max_gradient_norm)
+    loss = optimizer.compute_loss(loss_fn, loss_scale=FLAGS.loss_scale)
 - 依据opt和loss形式化定义training tensor
     train_op = opt.minimize(loss, global_step=global_step)
 ```
