@@ -1,6 +1,9 @@
 # FastNN Model Library
 ## 1. 简介
-FastNN（Fast Neural Networks）是一个基于[PAISoar](https://yq.aliyun.com/articles/705132)实现的分布式训练的基础算法库。目前功能简介如下：
+FastNN（Fast Neural Networks）是一个基于[PAISoar](https://yq.aliyun.com/articles/705132)实现的分布式训练的基础算法库，当前FastNN只包括计算机视觉的部分经典模型，后续会逐步开放NLP等领域的State-of-Art模型。如需在机器学习平台PAI（Platform of Artificial Intelligence）试用FastNN分布式训练服务，可访问[PAI平台官方主页](https://data.aliyun.com/product/learn?spm=5176.12825654.eofdhaal5.143.2cc52c4af9oxZf)开通，即可在PAI Studio或DSW-notebook上提交机器学习任务，具体操作流程可参考[TensorFlow使用手册](https://help.aliyun.com/document_detail/49571.html?spm=a2c4g.11186623.6.579.10501312JxztvO)。
+
+FastNN功能简介如下：
+如需在机器学习平台PAI（Platform of Artificial Intelligence）试用FastNN分布式训练服务，可访问[PAI平台官方主页](https://data.aliyun.com/product/learn?spm=5176.12825654.eofdhaal5.143.2cc52c4af9oxZf)开通，即可在PAI Studio或DSW-notebook上提交机器学习任务，具体操作流程可参考[TensorFlow使用手册](https://help.aliyun.com/document_detail/49571.html?spm=a2c4g.11186623.6.579.10501312JxztvO)。
 * 模型类别
 
     a.部分经典计算机视觉模型，包括inception、resnet、mobilenet、vgg、alexnet、nasnet等；
@@ -20,9 +23,9 @@ FastNN（Fast Neural Networks）是一个基于[PAISoar](https://yq.aliyun.com/a
     
     b.模型调优：默认只restore trainable variables，如需自定义对checkpoint选择性restore，可修改image_models/utils/misc_utils.py的get_assigment_map_from_checkpoint函数
 
-目前FastNN只包括计算机视觉的部分经典模型，后续会逐步开放NLP等领域的State-of-Art模型。如需试用机器学习平台PAI（Platform of Artificial Intelligence）服务，可访问[PAI平台官方主页](https://data.aliyun.com/product/learn?spm=5176.12825654.eofdhaal5.143.2cc52c4af9oxZf)开通，即可在PAI Studio或DSW-notebook上提交机器学习任务，具体操作流程可参考[TensorFlow使用手册](https://help.aliyun.com/document_detail/49571.html?spm=a2c4g.11186623.6.579.10501312JxztvO)。
 
-我们针对ResNet-v1-50模型上在弹内弹外集群P100上进行了大规模测试。从测试数据来看，PAISoar加速效果都非常理想，都能够取得接近线性scale的加速效果。
+
+我们针对ResNet-v1-50模型上在集群P100机器上进行了大规模测试。从测试数据来看，PAISoar加速效果都非常理想，都能够取得接近线性scale的加速效果。
 
 ![resnet_v1_50](https://pai-online.oss-cn-shanghai.aliyuncs.com/fastnn-data/readme/resnet_v1_50.png)
 
@@ -35,11 +38,11 @@ FastNN（Fast Neural Networks）是一个基于[PAISoar](https://yq.aliyun.com/a
 为了方便试用FastNN算法库image_models目录下的CV模型，我们准备好了一些公开数据集及其相应download_and_convert脚本，包括图像数据cifar10、mnist以及flowers。
 #### 2.1.1 本地数据
 借鉴TF-Slim库中提供数据下载及格式转换脚本（image_models/datasets/download_and_convert_data.py），以cifar10数据为例，脚本如下：
-```python
+```
 DATA_DIR=/tmp/data/cifar10
 python download_and_convert_data.py \
-    --dataset_name=cifar10 \
-    --dataset_dir="${DATA_DIR}"
+	--dataset_name=cifar10 \
+	--dataset_dir="${DATA_DIR}"
 ```
 脚本执行完毕后，在/tmp/data/cifar10目录下有以下tfrecord文件：
 >$ ls ${DATA_DIR}
@@ -71,23 +74,32 @@ FastNN模型库主文件为train_image_classifiers.py，用户超參、模型参
 下面分为“本地试用”、“PAI平台运行”两个章节详述试用方法。
 
 #### 2.2.1 本地试用
-本地不支持PAISoar功能，即不支持分布式训练。若只需要本地试用FastNN模型库的单机单卡场景下的训练，需要在执行脚本中设置用户参数enable_paisoar=False，下面以Resnet-v1-50模型在cifar10数据训练为例梳理测试流程。
+本地不支持PAISoar功能，即不支持分布式训练。若只需要本地试用FastNN模型库的单机单卡场景下的训练，需要在执行脚本中设置用户参数enable_paisoar=False，另外有以下软件需求：
+
+|软件|版本|
+| :-----: | :----: |
+|python|>=2.7.6|
+|TensorFlow|>=1.8|
+|CUDA|>= 9.0|
+|cuDNN| >= 7.0|
+
+下面以Resnet-v1-50模型在cifar10数据训练为例梳理测试流程。
 ##### 2.2.1.1 Pretrain脚本
 
-```python
+```
 DATASET_DIR=/tmp/data/cifar10
 TRAIN_FILES=cifar10_train.tfrecord
 python train_image_classifiers.py \
 	--task_type=pretrain \ 
 	--enable_paisoar=False \
 	--dataset_name=cifar10 \
-	--train_files=${TRAIN_FILES} \
-	--dataset_dir=${DATASET_DIR} \
+	--train_files="${TRAIN_FILES}" \
+	--dataset_dir="${DATASET_DIR}" \
 	--model_name=resnet_v1_50
 ```
 ##### 2.2.1.2 Finetune脚本
 
-```python
+```
 MODEL_DIR=/path/to/model_ckpt
 CKPT_FILE_NAME=resnet_v1_50.ckpt
 DATASET_DIR=/tmp/data/cifar10
@@ -96,11 +108,11 @@ python train_image_classifiers.py \
 	--task_type=finetune \
 	--enable_paisoar=False \
 	--dataset_name=cifar10 \
-	--train_files=${TRAIN_FILES} \
-	--dataset_dir=${DATASET_DIR} \
+	--train_files="${TRAIN_FILES}" \
+	--dataset_dir="${DATASET_DIR}" \
 	--model_name=resnet_v1_50 \
-	--model_dir=${MODEL_DIR} \
-	--ckpt_file_name=${CKPT_FILE_NAME}
+	--model_dir="${MODEL_DIR}" \
+	--ckpt_file_name="${CKPT_FILE_NAME}"
 ```
 
 #### 2.2.2 PAI平台运行
@@ -207,22 +219,22 @@ python train_image_classifiers.py \
 
 ```python
 整体代码架构流程如下：
-- 初始化models中某模型得到network_fn，并可能返回输入参数train_image_size;
+# 初始化models中某模型得到network_fn，并可能返回输入参数train_image_size;
     network_fn = nets_factory.get_network_fn(
             FLAGS.model_name,
             num_classes=FLAGS.num_classes,
             weight_decay=FLAGS.weight_decay,
             is_training=(FLAGS.task_type in ['pretrain', 'finetune']))
-- 若用户指定参数FLAGS.preprocessing_name，则初始化数据预处理函数得到preprocess_fn;
+# 若用户指定参数FLAGS.preprocessing_name，则初始化数据预处理函数得到preprocess_fn;
     preprocessing_fn = preprocessing_factory.get_preprocessing(
                 FLAGS.model_name or FLAGS.preprocessing_name,
                 is_training=(FLAGS.task_type in ['pretrain', 'finetune']))
-- 用户指定dataset_name，选择正确的tfrecord格式，同步调用preprocess_fn解析数据集得到数据dataset_iterator;
+# 用户指定dataset_name，选择正确的tfrecord格式，同步调用preprocess_fn解析数据集得到数据dataset_iterator;
     dataset_iterator = dataset_factory.get_dataset_iterator(FLAGS.dataset_name,
                                                             train_image_size,
                                                             preprocessing_fn,
                                                             data_sources,
-- 根据network_fn、dataset_iterator，定义计算loss的函数loss_fn：
+# 根据network_fn、dataset_iterator，定义计算loss的函数loss_fn：
     def loss_fn():
     	with tf.device('/cpu:0'):
       		images, labels = dataset_iterator.get_next()
@@ -231,10 +243,10 @@ python train_image_classifiers.py \
         if 'AuxLogits' in end_points:
           loss += tf.losses.sparse_softmax_cross_entropy(labels=labels, logits=tf.cast(end_points['AuxLogits'], tf.float32), weights=0.4)
         return loss
-- 调用PAI-Soar API封装loss_fn、tf原生optimizer
+# 调用PAI-Soar API封装loss_fn、tf原生optimizer
     opt = paisoar.ReplicatedVarsOptimizer(optimizer, clip_norm=FLAGS.max_gradient_norm)
     loss = optimizer.compute_loss(loss_fn, loss_scale=FLAGS.loss_scale)
-- 依据opt和loss形式化定义training tensor
+# 依据opt和loss形式化定义training tensor
     train_op = opt.minimize(loss, global_step=global_step)
 ```
 
