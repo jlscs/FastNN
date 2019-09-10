@@ -26,9 +26,14 @@ FastNN（Fast Neural Networks）是一个基于[PAISoar](https://yq.aliyun.com/a
 
 ![resnet_v1_50](https://pai-online.oss-cn-shanghai.aliyuncs.com/fastnn-data/readme/resnet_v1_50.png)
 
-## 2.  数据准备
+## 2. 快速试用
+本章节旨在给出FastNN库中已有模型的试用说明，无须修改任何代码逻辑，具体试用流程指引分为两步：
+* 数据准备：包括本地数据准备和PAI Web数据准备；
+* 训练Kick-off：包括本地执行脚本的编辑和PAI Web任务参数设置。
+
+### 2.1  数据准备
 为了方便试用FastNN算法库image_models目录下的CV模型，我们准备好了一些公开数据集及其相应download_and_convert脚本，包括图像数据cifar10、mnist以及flowers。
-### 2.1 本地数据
+#### 2.1.1 本地数据
 借鉴TF-Slim库中提供数据下载及格式转换脚本（image_models/datasets/download_and_convert_data.py），以cifar10数据为例，脚本如下：
 ```python
 DATA_DIR=/tmp/data/cifar10
@@ -45,7 +50,7 @@ python download_and_convert_data.py \
 
 >labels.txt
 
-### 2.2 OSS数据
+#### 2.1.2 OSS数据
 为了方便在[PAI平台](https://data.aliyun.com/product/learn?spm=5176.12825654.eofdhaal5.143.2cc52c4af9oxZf)试用FastNN，cifar10、mnist、flowers数据已下载并转换为tfrecord后存储在公开oss上，可通过机器学习平台PAI的“读取文件数据”访问，存储oss路径如下：
 
 |数据集|分类数|训练集|测试集|存储路径|
@@ -54,10 +59,20 @@ python download_and_convert_data.py \
 | cifar10 |  10    | 50000  |10000  | 北京：oss://pai-online-beijing.oss-cn-beijing-internal.aliyuncs.com/fastnn-data/cifar10/ 上海：oss://pai-online.oss-cn-shanghai-internal.aliyuncs.com/fastnn-data/cifar10/
 | flowers |  5     |60000   |10000  | 北京：oss://pai-online-beijing.oss-cn-beijing-internal.aliyuncs.com/fastnn-data/flowers/ 上海：oss://pai-online.oss-cn-shanghai-internal.aliyuncs.com/fastnn-data/flowers/
 
-## 3. 如何运行
-### 3.1 本地试用
+### 2.2 训练Kick-off
+FastNN模型库主文件为train_image_classifiers.py，用户超參、模型参数等及其相关简短说明详见flags.py文件，若仍然存在疑问，可跳转至分类详细描述所有参数的第3章节。其中训练脚本最常用的有以下六个参数。
+* task_type：字符串类型。取值为“pretrain”、“finetune”之一，指出任务类型为模型预训练或模型调优；
+* enable_paisoar：布尔类型。默认True，本地试用时需置为False。
+* dataset_name：字符串类型。默认mock，指出训练数据解析文件，如image_models/datasets目录下的cifar10.py、flowers.py、mnist.py文件。
+* train_files：字符串类型。默认None，以“,”为分隔符指出所有训练文件。
+* dataset_dir：字符串类型。默认None，指出训练数据路径。
+* model_name：字符串类型。默认inception_resnet_v2，指明模型名称，包括resnet_v1_50、vgg、inception等，详见image_models/models目录下的所有模型。
+特别地，当--task_type=finetune时，需额外指定--model_dir、--ckpt_file_name参数，分别指明模型checkpoint路径及checkpoint文件名。
+下面分为“本地试用”、“PAI平台运行”两个章节详述试用方法。
+
+#### 2.2.1 本地试用
 本地不支持PAISoar功能，即不支持分布式训练。若只需要本地试用FastNN模型库的单机单卡场景下的训练，需要在执行脚本中设置用户参数enable_paisoar=False，下面以Resnet-v1-50模型在cifar10数据训练为例梳理测试流程。
-#### 3.1.1 Pretrain脚本
+##### 2.2.1.1 Pretrain脚本
 
 ```python
 DATASET_DIR=/tmp/data/cifar10
@@ -70,7 +85,7 @@ python train_image_classifiers.py \
 	--dataset_dir=${DATASET_DIR} \
 	--model_name=resnet_v1_50
 ```
-#### 3.1.2 Finetune脚本
+##### 2.2.1.2 Finetune脚本
 
 ```python
 MODEL_DIR=/path/to/model_ckpt
@@ -88,11 +103,11 @@ python train_image_classifiers.py \
 	--ckpt_file_name=${CKPT_FILE_NAME}
 ```
 
-### 3.2 PAI平台运行
+#### 2.2.2 PAI平台运行
 机器学习平台PAI目前支持的框架包括 TensorFlow（兼容开源TF1.4、1.8版本），MXNet 0.9.5， Caffe rc3。TensorFlow 和 MXNet 支持用户自己编写的 Python 代码， Caffe 支持用户自定义网络文件。其中tensorflow框架内置PAISoar功能，支持单机多卡、多机多卡的分布式训练，具体使用参考[FastNN-On-PAI](https://yuque.antfin-inc.com/docs/share/1368e10c-45f1-443e-88aa-0bb5425fea72)文档。
 
-## 4. 用户参数指南
-3.2.4节中给出的用户参数文件示例仅给出了部分参数，FastNN库综合各个模型及PAISoar框架的需求，统一将可能用到的超參定义保存在flags.py文件（支持用户自定义新超參）中，已定义参数具体可分为以下部分。
+## 3. 用户参数指南
+2.2节中给出的用户参数文件示例仅给出了部分参数，FastNN库综合各个模型及PAISoar框架的需求，统一将可能用到的超參定义保存在flags.py文件（支持用户自定义新超參）中，已定义参数具体可分为以下部分。
 
 * Dataset Option：确定训练集的基本属性，如训练集存储路径dataset_dir；
 * Dataset PreProcessing Option：数据预处理函数及dataset pipeline相关参数；
@@ -102,7 +117,7 @@ python train_image_classifiers.py \
 * Logging Option：关于输出Log的参数；
 * Performance Tuning：混合精度等其他调优参数。
 
-### 4.1 Dataset Option
+### 3.1 Dataset Option
 
 |#Name|#Type|#Description|
 | :-----: | :----: | :-----|
@@ -112,7 +127,7 @@ python train_image_classifiers.py \
 |num_classes|integer|数据lable数，默认100|
 |train_files|string|训练数据文件名，文件间分隔符为逗号，如"0.tfrecord,1.tfrecord"|
 
-### 4.2 Dataset Preprocessing Tuning
+### 3.2 Dataset Preprocessing Tuning
 
 |#Name|#Type|#Description|
 | :-----: | :----: | :-----|
@@ -123,7 +138,7 @@ python train_image_classifiers.py \
 |num_preprocessing_threads|integer|预取线程数，默认为16|
 |datasets_use_caching|bool|Cache the compressed input data in memory. This improves the data input performance, at the cost of additional memory|
 
-### 4.3 Model Params Option
+### 3.3 Model Params Option
 
 |#Name|#Type|#Description|
 | :-----: | :----: | :-----|
@@ -136,7 +151,7 @@ python train_image_classifiers.py \
 |model_dir|string|dir of checkpoint for init|
 |ckpt_file_name|string|Initial checkpoint (pre-trained model: base_dir + model.ckpt).|
 
-### 4.4 Learning Rate Tuning
+### 3.4 Learning Rate Tuning
 
 |#Name|#Type|#Description|
 | :-----: | :----: | :-----|
@@ -148,7 +163,7 @@ python train_image_classifiers.py \
 |learning_rate|float|学习率初始值，默认0.01|
 |end_learning_rate|float|decay时学习率值的下限，默认0.0001|
 
-### 4.5 Optimizer Option
+### 3.5 Optimizer Option
 
 |#Name|#Type|#Description|
 | :-----: | :----: | :-----|
@@ -166,7 +181,7 @@ python train_image_classifiers.py \
 |rmsprop_momentum|float|Momentum for the RMSPropOptimizer, default 0.9|
 |rmsprop_decay|float|Decay term for RMSProp, default 0.9|
 
-### 4.6 Logging Option
+### 3.6 Logging Option
 
 |#Name|#Type|#Description|
 | :-----: | :----: | :-----|
@@ -178,7 +193,7 @@ python train_image_classifiers.py \
 |print_model_statistics|bool|whether or not to print trainable variables info, default false|
 |hooks|string|specify hooks for training, default "StopAtStepHook,ProfilerHook,LoggingTensorHook,CheckpointSaverHook"|
 
-### 4.7 Performanse Tuning Option
+### 3.7 Performanse Tuning Option
 
 |#Name|#Type|#Description|
 | :-----: | :----: | :-----|
@@ -187,7 +202,7 @@ python train_image_classifiers.py \
 |enable_paisoar|bool|whether or not to use pai soar，default True.|
 |protocol|string|default grpc.For rdma cluster, use grpc+verbs instead|
 
-## 5. 如何实现自定义需求
+## 4. 如何实现自定义需求
 若已有模型满足不了用户需求，可通过继承dataset／models／preprocessing接口，在进一步开发之前需要了解fastnn库的基本流程(以image_models为例，代码入口文件为train_image_classifiers.py):
 
 ```python
@@ -225,7 +240,7 @@ python train_image_classifiers.py \
 
 因此，为了进一步开发新需求，开发者需要了解dataset、models、preprocessing三个接口的使用。
 
-### 5.1 dataset
+### 4.1 增加数据集API
 **FastNN库已实现支持读取tfrecord格式的数据**，并基于TFRecordDataset接口实现dataset pipeline以供模型训练试用，如需读取其他数据格式，需要自行实现该部分逻辑（参考utils/dataset_utils.py）。另外，目前实现逻辑在数据分片实现不够精细，仅保证每个worker处理的tfrecord文件数尽量一致，并要求训练集的文件数不少于worker数，以保证每个worker处理不同的数据，其中cifar10、mnist训练集因只有一个文件仅支持单机多卡分布式训练，故要求用户在数据准备时尽量保证数据能平均分配到每台机器。
 
 若数据格式同为tfrecord，只需操作如下（可参考datasets目录下cifar10/mnist/flowers各文件等）：
@@ -259,9 +274,9 @@ def parse_fn(example):
 ```
 
 * 在datasets/dataset_factory.py补足dataset_map
-* 执行任务脚本时，用户需要传參train_files（含义相见4.1章节介绍）
+* 执行任务脚本时，用户需要传參train_files（含义相见3.1章节介绍）
 
-### 5.2 models
+### 4.2 增加模型API
 开发者如需完成新模型的开发，参考image_models/models目录下各模型代码，有以下要求：
 
 * 单机单卡代码跑通，并能正常收敛；
@@ -273,7 +288,7 @@ datasets、preprocessing逻辑在仅开发新模型时可直接复用，关于�
 * models/model_factory.py中models_map和arg_scopes_map增加新模型的定义，可参考model_factory.py中对已有模型的定义；
 * 正常收敛的新模型代码导入到project的image_models/models目录即可。
 
-### 5.3 preprocessing
+### 4.3 增加数据预处理API
 开发者如需自定义新的数据预处理流程，有以下要求：
 
 * 暴露出输入／输出接口，输入的属性（包括Type／Shape等）对应于dataset输出的属性，以及输出属性（包括Type／Shape等）对应算法模型输入的属性；
@@ -284,7 +299,10 @@ datasets、preprocessing逻辑在仅开发新模型时可直接复用，关于�
 
 * 预处理函数代码导入到project的image_models/preprocessing下即可，可参考已有实现，如inception_preprocessing.py等
 
-## 6. 总结与致谢
+### 4.4 增加损失函数API
+FastNN库image_models的主文件train_image_classifiers中默认使用tf.losses.sparse_softmax_cross_entropy构造loss_fn，若需要构造自定义的损失函数，直接修改主文件中的loss_fn。值得注意的是，使用PAISoar做分布式时，loss_fn要求只返回loss，若需返回自定义参数，可通过全局参数传输，可参考主文件中loss_fn返回accuracy。
+
+## 5. 总结与致谢
 在本手册里面我们简单的介绍了阿里机器学习平台PAI在FastNN算法库的一些工作。我们深信这些工作能够帮助算法同学快速的进行模型的迭代、支持更大规模的样本训练和更大空间上的模型创新的想象力。接下来PAI还会持续的在分布式上进行更多的创新工作，包括更优性能的模型并行、通信梯度压缩等。
 
 FastNN是基于阿里机器学习平台PAI的PAISoar组件实现分布式训练的基础算法库，包含计算机视觉领域目前state-of-art的经典模型，后续会支持NLP等领域的模型，包括Bert、XLNet、GPT-2、NMT等。目前FastNN聚焦于模型训练分布式性能的加速，其中image_models模型直接引用[TensorFlow-Slim image classification model library](https://github.com/tensorflow/models/tree/master/research/slim#tensorflow-slim-image-classification-model-library)的实现。感谢TensorFlow社区贡献计算机视觉领域经典模型的开源实现，如有不妥之处，敬请指正。
