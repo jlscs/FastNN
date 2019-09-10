@@ -215,10 +215,9 @@ python train_image_classifiers.py \
 |protocol|string|default grpc.For rdma cluster, use grpc+verbs instead|
 
 ## 4. 如何实现自定义需求
-若已有模型满足不了用户需求，可通过继承dataset／models／preprocessing接口，在进一步开发之前需要了解fastnn库的基本流程(以image_models为例，代码入口文件为train_image_classifiers.py):
+若已有模型满足不了用户需求，可通过继承dataset／models／preprocessing接口，在进一步开发之前需要了解fastnn库的基本流程(以image_models为例，代码入口文件为train_image_classifiers.py)，整体代码架构流程如下:
 
-```python
-整体代码架构流程如下：
+```
 # 初始化models中某模型得到network_fn，并可能返回输入参数train_image_size;
     network_fn = nets_factory.get_network_fn(
             FLAGS.model_name,
