@@ -20,7 +20,7 @@ FastNN功能简介如下：
 
     a.模型预训练
     
-    b.模型调优：默认只重载可训练的变量，如需自定义对checkpoint选择性重载，可修改image_models/utils/misc_utils.py的get_assigment_map_from_checkpoint函数
+    b.模型调优：默认只重载可训练的变量，如需自定义对checkpoint选择性重载，可修改images/utils/misc_utils.py的get_assigment_map_from_checkpoint函数
 
 
 
@@ -34,9 +34,9 @@ FastNN功能简介如下：
 * 训练启动：包括本地执行脚本的编辑和PAI Web任务参数设置。
 
 ### 2.1  数据准备
-为了方便试用FastNN算法库image_models目录下的计算机视觉模型，我们准备好了一些公开数据集及其相应download_and_convert脚本，包括图像数据cifar10、mnist以及flowers。
+为了方便试用FastNN算法库images目录下的计算机视觉模型，我们准备好了一些公开数据集及其相应download_and_convert脚本，包括图像数据cifar10、mnist以及flowers。
 #### 2.1.1 本地数据
-借鉴TF-Slim库中提供数据下载及格式转换脚本（image_models/datasets/download_and_convert_data.py），以cifar10数据为例，脚本如下：
+借鉴TF-Slim库中提供数据下载及格式转换脚本（images/datasets/download_and_convert_data.py），以cifar10数据为例，脚本如下：
 ```
 DATA_DIR=/tmp/data/cifar10
 python download_and_convert_data.py \
@@ -65,10 +65,10 @@ python download_and_convert_data.py \
 FastNN模型库主文件为train_image_classifiers.py，用户超參、模型参数等及其相关简短说明详见flags.py文件，若仍然存在疑问，可跳转至分类详细描述所有参数的第3章节。其中训练脚本最常用的有以下六个参数。
 * task_type：字符串类型。取值为“pretrain”、“finetune”之一，指出任务类型为模型预训练或模型调优；
 * enable_paisoar：布尔类型。默认True，本地试用时需置为False。
-* dataset_name：字符串类型。默认mock，指出训练数据解析文件，如image_models/datasets目录下的cifar10.py、flowers.py、mnist.py文件。
+* dataset_name：字符串类型。默认mock，指出训练数据解析文件，如images/datasets目录下的cifar10.py、flowers.py、mnist.py文件。
 * train_files：字符串类型。默认None，以“,”为分隔符指出所有训练文件。
 * dataset_dir：字符串类型。默认None，指出训练数据路径。
-* model_name：字符串类型。默认inception_resnet_v2，指明模型名称，包括resnet_v1_50、vgg、inception等，详见image_models/models目录下的所有模型。
+* model_name：字符串类型。默认inception_resnet_v2，指明模型名称，包括resnet_v1_50、vgg、inception等，详见images/models目录下的所有模型。
 特别地，当--task_type=finetune时，需额外指定model_dir、ckpt_file_name参数，分别指明模型checkpoint路径及checkpoint文件名。
 下面分为“本地试用”、“PAI平台运行”两个章节详述试用方法。
 
