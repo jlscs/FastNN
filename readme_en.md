@@ -7,7 +7,7 @@ If you gonna to try out on PAI(Platform of Artificial Intelligence)for distribut
 FastNN Features：
 * Models
 
-    a.Some classic models on Computer vision，including inception、resnet、mobilenet、vgg、alexnet、nasnet and so on;
+    a.Some classic models on computer vision，including inception、resnet、mobilenet、vgg、alexnet、nasnet and so on;
     
     b.Preparing state-of-art models on natural language processing, including Bert、XLnet、NMT、GPT-2;
     
@@ -22,7 +22,7 @@ FastNN Features：
 
     a.Model Pretrain
     
-    b.Model Finetune：Default restore trainable variables only. Gonna to self-defined checkpoint restoring，please turn to get_assigment_map_from_checkpoint in file "images/utils/misc_utils.py".
+    b.Model Finetune：Restore only trainable variables default. Gonna to self-defined checkpoint restoring，please turn to get_assigment_map_from_checkpoint in file "images/utils/misc_utils.py".
 
 
 We choose ResNet-v1-50 model and conduct large-scale test on Alibaba Cloud Computing Cluster(GPU P100). As the chart shows，PAISoar performs perfectly with nearly linear acceleration.
