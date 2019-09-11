@@ -24,7 +24,8 @@ FastNN功能简介如下：
 
 我们针对ResNet-v1-50模型上在阿里云集群机器(GPU卡型为P100)上进行了大规模测试。从测试数据来看，PAISoar加速效果都非常理想，都能够取得接近线性scale的加速效果。
 
-![resnet_v1_50](https://pai-online.oss-cn-shanghai.aliyuncs.com/fastnn-data/readme/resnet_v1_50.png)
+![resnet_v1_50](http://pai-online.oss-cn-shanghai.aliyuncs.com/fastnn-data/readme/resnet_v1_50.png)
+
 
 ## 2. 快速试用
 本章节旨在给出FastNN库中已有模型的试用说明，无须修改任何代码逻辑，具体试用流程指引分为两步：
