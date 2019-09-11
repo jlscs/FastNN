@@ -27,7 +27,7 @@ FastNN Features：
 
 We choose ResNet-v1-50 model and conduct large-scale test on Alibaba Cloud Computing Cluster(GPU P100). As the chart shows，PAISoar performs perfectly with nearly linear acceleration.
 
-![resnet_v1_50](https://pai-online.oss-cn-shanghai.aliyuncs.com/fastnn-data/readme/resnet_v1_50.png)
+![resnet_v1_50](https://pai-online.oss-cn-shanghai.aliyuncs.com/fastnn-data/readme/resnet_v1_50_en.png)
 
 ## 2. Quick Start
 This chaper is all about intructions on FastNN usage without any code modification, including：
