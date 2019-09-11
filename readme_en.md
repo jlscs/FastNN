@@ -121,7 +121,7 @@ python train_image_classifiers.py \
 ```
 
 #### 2.2.2 PAI Trial
-PAI supports several state-of-art frameworks, including TensorFlow(compatible with community version of 1.4 and 1.8), MXNet(0.9.5), Caffe(rc3). However, only tensorflow applies built-in PAISoar and support distributed training of multi-gpus and multi-nodes. For mannual, please turn to [FastNN-On-PAI](https://yuque.antfin-inc.com/docs/share/1368e10c-45f1-443e-88aa-0bb5425fea72)。
+PAI supports several state-of-art frameworks, including TensorFlow(compatible with community version of 1.4 and 1.8), MXNet(0.9.5), Caffe(rc3). However, only tensorflow applies built-in PAISoar and support distributed training of multi-gpus and multi-nodes. For mannual, please turn to [FastNN-On-PAI](https://yuque.antfin-inc.com/docs/share/48c723cf-eef0-4da4-8bb9-090300832ffd).
 
 ## 3. User Parameters Intructions
 Chapter 2.2 explains some most import params, While still many params stay unknown to users. FastNN model library integrates requirements form models and PAISoar, summarizes params in file 'flags.py'(which also allows new params self-defined), which can be divided into 6 parts:
