@@ -22,8 +22,6 @@ FastNN功能简介如下：
     
     b.模型调优：默认只重载可训练的变量，如需自定义对checkpoint选择性重载，可修改images/utils/misc_utils.py的get_assigment_map_from_checkpoint函数
 
-
-
 我们针对ResNet-v1-50模型上在阿里云集群机器(GPU卡型为P100)上进行了大规模测试。从测试数据来看，PAISoar加速效果都非常理想，都能够取得接近线性scale的加速效果。
 
 ![resnet_v1_50](https://pai-online.oss-cn-shanghai.aliyuncs.com/fastnn-data/readme/resnet_v1_50.png)
