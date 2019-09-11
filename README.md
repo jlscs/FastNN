@@ -114,7 +114,7 @@ python train_image_classifiers.py \
 ```
 
 #### 2.2.2 PAI平台运行
-机器学习平台PAI目前支持的框架包括 TensorFlow（兼容开源TF1.4、1.8版本），MXNet 0.9.5， Caffe rc3。TensorFlow 和 MXNet 支持用户自己编写的 Python 代码， Caffe 支持用户自定义网络文件。其中tensorflow框架内置PAISoar功能，支持单机多卡、多机多卡的分布式训练，具体使用参考[FastNN-On-PAI](https://yuque.antfin-inc.com/docs/share/1368e10c-45f1-443e-88aa-0bb5425fea72)文档。
+机器学习平台PAI目前支持的框架包括 TensorFlow（兼容开源TF1.4、1.8版本），MXNet 0.9.5， Caffe rc3。TensorFlow 和 MXNet 支持用户自己编写的 Python 代码， Caffe 支持用户自定义网络文件。其中tensorflow框架内置PAISoar功能，支持单机多卡、多机多卡的分布式训练，具体使用参考[FastNN-On-PAI](https://yuque.antfin-inc.com/docs/share/641d1062-a4a4-4d71-962d-867bbcfdbb6b)文档。
 
 ## 3. 用户参数指南
 2.2节中给出的用户参数文件示例仅给出了部分参数，FastNN库综合各个模型及PAISoar框架的需求，统一将可能用到的超參定义保存在flags.py文件（支持用户自定义新超參）中，已定义参数具体可分为以下部分。
