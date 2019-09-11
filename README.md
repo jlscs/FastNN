@@ -1,6 +1,6 @@
-# FastNN Model Library
+# FastNN模型库
 ## 1. 简介
-FastNN（Fast Neural Networks）是一个基于[PAISoar](https://yq.aliyun.com/articles/705132)实现的分布式训练的基础算法库，当前FastNN只包括计算机视觉的部分经典模型，后续会逐步开放NLP等领域的State-of-Art模型。如需在机器学习平台PAI（Platform of Artificial Intelligence）试用FastNN分布式训练服务，可访问[PAI平台官方主页](https://data.aliyun.com/product/learn?spm=5176.12825654.eofdhaal5.143.2cc52c4af9oxZf)开通，即可在PAI Studio或DSW-notebook上提交机器学习任务，具体操作流程可参考[TensorFlow使用手册](https://help.aliyun.com/document_detail/49571.html?spm=a2c4g.11186623.6.579.10501312JxztvO)，也可参考第二章节“快速试用”。
+FastNN（Fast Neural Networks）是一个基于[PAISoar](https://yq.aliyun.com/articles/705132)实现的分布式训练的基础算法库，当前FastNN只包括计算机视觉的部分经典模型，后续会逐步开放自然语言处理等领域的先进模型。如需在机器学习平台PAI（Platform of Artificial Intelligence）试用FastNN分布式训练服务，可访问[PAI平台官方主页](https://data.aliyun.com/product/learn?spm=5176.12825654.eofdhaal5.143.2cc52c4af9oxZf)开通，即可在PAI Studio或DSW-notebook上提交机器学习任务，具体操作流程可参考[TensorFlow使用手册](https://help.aliyun.com/document_detail/49571.html?spm=a2c4g.11186623.6.579.10501312JxztvO)，也可参考第二章节“快速试用”。
 
 FastNN功能简介如下：
 * 模型类别
@@ -20,7 +20,7 @@ FastNN功能简介如下：
 
     a.模型预训练
     
-    b.模型调优：默认只restore trainable variables，如需自定义对checkpoint选择性restore，可修改image_models/utils/misc_utils.py的get_assigment_map_from_checkpoint函数
+    b.模型调优：默认只重载可训练的变量，如需自定义对checkpoint选择性重载，可修改image_models/utils/misc_utils.py的get_assigment_map_from_checkpoint函数
 
 
 
@@ -31,10 +31,10 @@ FastNN功能简介如下：
 ## 2. 快速试用
 本章节旨在给出FastNN库中已有模型的试用说明，无须修改任何代码逻辑，具体试用流程指引分为两步：
 * 数据准备：包括本地数据准备和PAI Web数据准备；
-* 训练Kick-off：包括本地执行脚本的编辑和PAI Web任务参数设置。
+* 训练启动：包括本地执行脚本的编辑和PAI Web任务参数设置。
 
 ### 2.1  数据准备
-为了方便试用FastNN算法库image_models目录下的CV模型，我们准备好了一些公开数据集及其相应download_and_convert脚本，包括图像数据cifar10、mnist以及flowers。
+为了方便试用FastNN算法库image_models目录下的计算机视觉模型，我们准备好了一些公开数据集及其相应download_and_convert脚本，包括图像数据cifar10、mnist以及flowers。
 #### 2.1.1 本地数据
 借鉴TF-Slim库中提供数据下载及格式转换脚本（image_models/datasets/download_and_convert_data.py），以cifar10数据为例，脚本如下：
 ```
@@ -61,7 +61,7 @@ python download_and_convert_data.py \
 | cifar10 |  10    | 50000  |10000  | 北京：oss://pai-online-beijing.oss-cn-beijing-internal.aliyuncs.com/fastnn-data/cifar10/ 上海：oss://pai-online.oss-cn-shanghai-internal.aliyuncs.com/fastnn-data/cifar10/
 | flowers |  5     |60000   |10000  | 北京：oss://pai-online-beijing.oss-cn-beijing-internal.aliyuncs.com/fastnn-data/flowers/ 上海：oss://pai-online.oss-cn-shanghai-internal.aliyuncs.com/fastnn-data/flowers/
 
-### 2.2 训练Kick-off
+### 2.2 训练启动
 FastNN模型库主文件为train_image_classifiers.py，用户超參、模型参数等及其相关简短说明详见flags.py文件，若仍然存在疑问，可跳转至分类详细描述所有参数的第3章节。其中训练脚本最常用的有以下六个参数。
 * task_type：字符串类型。取值为“pretrain”、“finetune”之一，指出任务类型为模型预训练或模型调优；
 * enable_paisoar：布尔类型。默认True，本地试用时需置为False。
@@ -69,7 +69,7 @@ FastNN模型库主文件为train_image_classifiers.py，用户超參、模型参
 * train_files：字符串类型。默认None，以“,”为分隔符指出所有训练文件。
 * dataset_dir：字符串类型。默认None，指出训练数据路径。
 * model_name：字符串类型。默认inception_resnet_v2，指明模型名称，包括resnet_v1_50、vgg、inception等，详见image_models/models目录下的所有模型。
-特别地，当--task_type=finetune时，需额外指定--model_dir、--ckpt_file_name参数，分别指明模型checkpoint路径及checkpoint文件名。
+特别地，当--task_type=finetune时，需额外指定model_dir、ckpt_file_name参数，分别指明模型checkpoint路径及checkpoint文件名。
 下面分为“本地试用”、“PAI平台运行”两个章节详述试用方法。
 
 #### 2.2.1 本地试用
@@ -83,7 +83,7 @@ FastNN模型库主文件为train_image_classifiers.py，用户超參、模型参
 |cuDNN| >= 7.0|
 
 下面以Resnet-v1-50模型在cifar10数据训练为例梳理测试流程。
-##### 2.2.1.1 Pretrain脚本
+##### 2.2.1.1 预训练脚本
 
 ```
 DATASET_DIR=/tmp/data/cifar10
@@ -96,7 +96,7 @@ python train_image_classifiers.py \
 	--dataset_dir="${DATASET_DIR}" \
 	--model_name=resnet_v1_50
 ```
-##### 2.2.1.2 Finetune脚本
+##### 2.2.1.2 模型调优脚本
 
 ```
 MODEL_DIR=/path/to/model_ckpt
@@ -120,98 +120,98 @@ python train_image_classifiers.py \
 ## 3. 用户参数指南
 2.2节中给出的用户参数文件示例仅给出了部分参数，FastNN库综合各个模型及PAISoar框架的需求，统一将可能用到的超參定义保存在flags.py文件（支持用户自定义新超參）中，已定义参数具体可分为以下部分。
 
-* Dataset Option：确定训练集的基本属性，如训练集存储路径dataset_dir；
-* Dataset PreProcessing Option：数据预处理函数及dataset pipeline相关参数；
-* Model Params Option：模型训练基本超參，包括model_name、batch_size等；
-* Learning Rate Tuning：学习率及其相关调优参数；
-* Optimizer Option：优化器及其相关参数；
-* Logging Option：关于输出Log的参数；
-* Performance Tuning：混合精度等其他调优参数。
+* 数据集参数：确定训练集的基本属性，如训练集存储路径dataset_dir；
+* 数据预处理参数：数据预处理函数及dataset pipeline相关参数；
+* 模型参数：模型训练基本超參，包括model_name、batch_size等；
+* 学习率参数：学习率及其相关调优参数；
+* 优化器参数：优化器及其相关参数；
+* 日志参数：关于输出日志的参数；
+* 性能调优参数：混合精度等其他调优参数。
 
-### 3.1 Dataset Option
+### 3.1 数据集参数
 
-|#Name|#Type|#Description|
+|#名称|#类型|#描述|
 | :-----: | :----: | :-----|
 |dataset_name|string|指定输入数据名称，默认mock|
 |dataset_dir|string|指定本地输入数据集路径，默认为None|
 |num_sample_per_epoch|integer|数据集总样本数|
-|num_classes|integer|数据lable数，默认100|
+|num_classes|integer|数据分类数，默认100|
 |train_files|string|训练数据文件名，文件间分隔符为逗号，如"0.tfrecord,1.tfrecord"|
 
-### 3.2 Dataset Preprocessing Tuning
+### 3.2 数据预处理参数
 
-|#Name|#Type|#Description|
+|#名称|#类型|#描述|
 | :-----: | :----: | :-----|
 |preprocessing_name|string|预处理方法名，默认None|
-|shuffle_buffer_size|integer|数据shuffle的buffer size，默认1024|
+|shuffle_buffer_size|integer|样本粒度进行shuffle的buffer大小，默认1024|
 |num_parallel_batches|integer|与batch_size乘积为map_and_batch的并行线程数，默认8|
 |prefetch_buffer_size|integer|预取N个batch数据，默认N=32|
 |num_preprocessing_threads|integer|预取线程数，默认为16|
-|datasets_use_caching|bool|Cache the compressed input data in memory. This improves the data input performance, at the cost of additional memory|
+|datasets_use_caching|bool|以内存为开销进行输入数据的压缩缓存|
 
-### 3.3 Model Params Option
+### 3.3 模型参数
 
-|#Name|#Type|#Description|
+|#名称|#类型|#描述|
 | :-----: | :----: | :-----|
-|task_type|string|support pretrain or finetune, default pretrain|
+|task_type|string|支持模型预训练（pretrain）和模型调优（finetune）, 默认取值pretrain|
 |model_name|string|指定模型名称，默认inception_resnet_v2|
 |num_epochs|integer|训练epochs，默认100|
-|weight_decay|float|The weight decay on the model weights, default 0.00004|
-|max_gradient_norm|float|clip gradient to this global norm, default None for clip-by-global-norm diabled|
-|batch_size|integer|The number of samples in each batch, default 32|
-|model_dir|string|dir of checkpoint for init|
-|ckpt_file_name|string|Initial checkpoint (pre-trained model: base_dir + model.ckpt).|
+|weight_decay|float|模型权重衰减系数, 默认0.00004|
+|max_gradient_norm|float|根据全局归一化值进行梯度裁剪, 默认取值为None，不进行梯度裁剪|
+|batch_size|integer|批大小, 默认32|
+|model_dir|string|checkpoin所在路径，默认为None|
+|ckpt_file_name|string|checkpoint文件名，默认为None|
 
-### 3.4 Learning Rate Tuning
+### 3.4 学习率参数
 
-|#Name|#Type|#Description|
+|#名称|#类型|#描述|
 | :-----: | :----: | :-----|
-|warmup_steps|integer|how many steps we inverse-decay learning. default 0.|
-|warmup_scheme|string|how to warmup learning rates. Options include:'t2t' refers to Tensor2Tensor way, start with lr 100 times smaller,then exponentiate until the specified lr. default 't2t'|
-|decay_scheme|string|How we decay learning rate. Options include:1、luong234: after 2/3 num train steps, we start halving the learning rate for 4 times before finishing;2、luong5: after 1/2 num train steps, we start halving the learning rate for 5 times before finishing;3、luong10: after 1/2 num train steps, we start halving the learning rate for 10 times before finishing.|
-|learning_rate_decay_factor|float|learning rate decay factor, default 0.94|
-|learning_rate_decay_type|string|specifies how the learning rate is decayed. One of ["fixed", "exponential", or "polynomial"], default exponential|
+|warmup_steps|integer|逆衰减学习率的迭代数. 默认0.|
+|warmup_scheme|string|学习率逆衰减的方式. 可选:'t2t' 指Tensor2Tensor, 初始化为指定学习率的1/100，然后exponentiate逆衰减到指定学习率为止|
+|decay_scheme|string|学习率衰减的方式. 可选:1、luong234: 在2/3的总迭代数之后, 开始4次衰减，衰减系数为1/2; 2、luong5: 在1/2的总迭代数之后, 开始5次衰减，衰减系数为1/2; 3、luong10: 在1/2的总迭代数之后, 开始10次衰减，衰减系数为1/2.|
+|learning_rate_decay_factor|float|学习率衰减系数, 默认0.94|
+|learning_rate_decay_type|string|学习率衰减类型. 可选["fixed", "exponential", "polynomial"], 默认exponential|
 |learning_rate|float|学习率初始值，默认0.01|
-|end_learning_rate|float|decay时学习率值的下限，默认0.0001|
+|end_learning_rate|float|衰减时学习率值的下限，默认0.0001|
 
-### 3.5 Optimizer Option
+### 3.5 优化器参数
 
-|#Name|#Type|#Description|
+|#名称|#类型|#描述|
 | :-----: | :----: | :-----|
-|optimizer|string|the name of the optimizer, one of "adadelta", "adagrad", "adam", "ftrl", "momentum", "sgd" or "rmsprop". Default "rmsprop"|
-|adadelta_rho|float|the decay rate for adadelta, default 0.95, specially for Adadelta|
-|adagrad_initial_accumulator_value|float|starting value for the AdaGrad accumulators, default 0.1, specially for Adagrada|
-|adam_beta1|float|the exponential decay rate for the 1st moment estimates, default 0.9, specially for Adam|
-|adam_beta2|float|the exponential decay rate for the 2nd moment estimates, default 0.999, specially for Adam|
-|opt_epsilon|float|epsilon term for the optimizer, default 1.0, specially for Adam|
-|ftrl_learning_rate_power|float|the learning rate power, default -0.5, specially for Ftrl|
-|ftrl_initial_accumulator_value|float|Starting value for the FTRL accumulators, default 0.1, specially for Ftrl|
-|ftrl_l1|float|The FTRL l1 regularization strength, default 0.0, specially for Ftrl|
-|ftrl_l2|float|The FTRL l2 regularization strength, default 0.0, specially for Ftrl|
-|momentum|float|The momentum for the MomentumOptimizer, default 0.9, specially for Momentum|
-|rmsprop_momentum|float|Momentum for the RMSPropOptimizer, default 0.9|
-|rmsprop_decay|float|Decay term for RMSProp, default 0.9|
+|optimizer|string|优化器名称, 取值["adadelta", "adagrad", "adam", "ftrl", "momentum", "sgd"，"rmsprop"]. 默认"rmsprop"|
+|adadelta_rho|float|adadelta的衰减系数, default 0.95, specially for Adadelta|
+|adagrad_initial_accumulator_value|float|AdaGrad积累器的起始值, 默认0.1, Adagrada优化器专用参数|
+|adam_beta1|float|一次动量预测的指数衰减率, 默认0.9, Adam优化器专用参数|
+|adam_beta2|float|二次动量预测的指数衰减率, 默认0.999, Adam优化器专用参数|
+|opt_epsilon|float|优化器偏置值, 默认1.0, Adam优化器专用参数|
+|ftrl_learning_rate_power|float|学习率参数的幂参数, 默认-0.5, Ftrl优化器专用参数|
+|ftrl_initial_accumulator_value|float|FTRL积累器的起始, 默认0.1, Ftrl优化器专用参数|
+|ftrl_l1|float|FTRL l1正则项, 默认0.0, Ftrl优化器专用参数|
+|ftrl_l2|float|FTRL l2正则项, 默认0.0, Ftrl优化器专用参数|
+|momentum|float|MomentumOptimizer的动量参数, 默认0.9, Momentum优化器专用参数|
+|rmsprop_momentum|float|RMSPropOptimizer的动量参数, 默认0.9|
+|rmsprop_decay|float|RMSProp的衰减系数, 默认0.9|
 
-### 3.6 Logging Option
+### 3.6 日志参数
 
-|#Name|#Type|#Description|
+|#名称|#类型|#描述|
 | :-----: | :----: | :-----|
-|stop_at_step|integer|the whole training steps, default 100|
-|log_loss_every_n_iters|integer|frequency to print loss info, default 10|
-|profile_every_n_iters|integer|frequency to print timeline, default 0|
-|profile_at_task|integer|node index to output timeline, default 0|
-|log_device_placement|bool|whether or not to log device placement, default False|
-|print_model_statistics|bool|whether or not to print trainable variables info, default false|
-|hooks|string|specify hooks for training, default "StopAtStepHook,ProfilerHook,LoggingTensorHook,CheckpointSaverHook"|
+|stop_at_step|integer|训练总迭代数, 默认100|
+|log_loss_every_n_iters|integer|打印loss信息的迭代频率, 默认10|
+|profile_every_n_iters|integer|打印timeline的迭代频率, 默认0|
+|profile_at_task|integer|输出timeline的机器对应索引, 默认0，对应chief worker|
+|log_device_placement|bool|是否输出device placement信息, 默认False|
+|print_model_statistics|bool|是否输出可训练变量信息, 默认false|
+|hooks|string|指定训练hooks, 默认"StopAtStepHook,ProfilerHook,LoggingTensorHook,CheckpointSaverHook"|
 
-### 3.7 Performanse Tuning Option
+### 3.7 性能调优参数
 
-|#Name|#Type|#Description|
+|#名称|#类型|#描述|
 | :-----: | :----: | :-----|
-|use_fp16|bool|whether to train with fp16, default True|
-|loss_scale|float|loss scale value for training, default 1.0|
-|enable_paisoar|bool|whether or not to use pai soar，default True.|
-|protocol|string|default grpc.For rdma cluster, use grpc+verbs instead|
+|use_fp16|bool|是否进行半精度训练, 默认True|
+|loss_scale|float|训练中loss值scale的系数, 默认1.0|
+|enable_paisoar|bool|是否使用paisoar，默认True.|
+|protocol|string|默认grpc.rdma集群可用“grpc+verbs”提升数据存取效率|
 
 ## 4. 如何实现自定义需求
 若已有模型满足不了用户需求，可通过继承dataset／models／preprocessing接口，在进一步开发之前需要了解fastnn库的基本流程(以image_models为例，代码入口文件为train_image_classifiers.py)，整体代码架构流程如下:
