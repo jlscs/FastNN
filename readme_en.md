@@ -25,14 +25,14 @@ FastNN Features：
     
     b.Model Finetune：Only restore  trainable variables by default. Please turn to function 'get_assigment_map_from_checkpoint' in file "images/utils/misc_utils.py" for any other requirements.
 
-We choose ResNet-v1-50 model and conduct large-scale test on Alibaba Cloud Computing Cluster(GPU P100). As the chart shows，PAISoar performs perfectly with near-linear scaling acceleration.
+We choose ResNet-v1-50 model and conduct large-scale test on Alibaba Cloud Computing Cluster(GPU P100). As the chart shows, PAISoar performs perfectly with near-linear scaling acceleration.
 
 ![resnet_v1_50](https://pai-online.oss-cn-shanghai.aliyuncs.com/fastnn-data/readme/resnet_v1_50_en.png)
 
 ## 2. Quick Start
 This chaper is all about intructions on FastNN usage without any code modification, including：
 * Data Preparing: Preparing local or PAI Web training data;
-* Kick-off training: Setting for local shell script or PAI Web training parameters。
+* Kick-off training: Setting for local shell script or PAI Web training parameters.
 
 ### 2.1 Data Preparing
 For the convenience of trying  models in FastNN model Library, we prepare some open datasets (including cifar10, mnist and flowers) or their relative shell scripts for downloading and converting.
@@ -72,7 +72,7 @@ For more information, please turn to chapter 3. Among all params, the most commo
 * dataset_dir：String type. Indicating training dataset directory, None by default;
 * model_name：String type. Indicating model name, options among ['resnet_v1_50', 'vgg', 'inception']，for more information, check images/models;
 
-Particularly, if task_type is 'finetune', model_dir and ckpt_file_name need also be specified, which indicates checkpoint dir and checkpoint file name respectively。
+Particularly, if task_type is 'finetune', model_dir and ckpt_file_name need also be specified, which indicates checkpoint dir and checkpoint file name respectively.
 
 We provide instructions for FastNN model libraty on "Local Trial" and "PAI Trial" as following.
 
