@@ -44,11 +44,8 @@ python download_and_convert_data.py \
 ```
 脚本执行完毕后，在/tmp/data/cifar10目录下有以下tfrecord文件：
 >$ ls ${DATA_DIR}
-
 >cifar10_train.tfrecord
-
 >cifar10_test.tfrecord
-
 >labels.txt
 
 #### 2.1.2 OSS数据
