@@ -1,62 +1,60 @@
 # FastNN Model Library
 ## 1. Introduction
-FastNN(Fast Neural Networks)aims to show how to implement distributed model based on [PAISoar](https://yq.aliyun.com/articles/705132), which allows researchers to most effective apply distributed neural networks. For now, FastNN only provides some classic models on Computer vision, but is preparing state-of-art models on natural language processing.
+FastNN (Fast Neural Networks) is a package of models that aims to show how to implement distributed model in TensorFlow based on [PAISoar](https://yq.aliyun.com/articles/705132). FastNN could help researchers effectively apply distributed neural networks. For now, the initial version of FastNN  provides several classic models on Computer Vision (CV). More state-of-art models would be also integrated into the package in the near future.
 
-If you gonna to try out on PAI(Platform of Artificial Intelligence)for distributed FastNN, please turn to [PAI Homepage](https://data.aliyun.com/product/learn?spm=5176.12825654.eofdhaal5.143.2cc52c4af9oxZf), then submit machine-learning jobs on PAI Studio or DSW-notebook. Relative instructions are clarified in [TensorFlow manual](https://help.aliyun.com/document_detail/49571.html?spm=a2c4g.11186623.6.579.10501312JxztvO), and the following second "Quick Start" chapter.
+If you have interest to try running FastNN models in distributed environment on Alibaba PAI (Platform of Artificial Intelligence), please turn to [PAI Homepage](https://data.aliyun.com/product/learn?spm=5176.12825654.eofdhaal5.143.2cc52c4af9oxZf), then submit machine-learning jobs on PAI-Studio or PAI-DSW notebook. Relative detailed instructions are introduced in [TensorFlow manual](https://help.aliyun.com/document_detail/49571.html?spm=a2c4g.11186623.6.579.10501312JxztvO), you can also quickly jump to chapter "Quick Start".
 
 FastNN Features：
 * Models
 
-    a.Some classic models on computer vision，including inception、resnet、mobilenet、vgg、alexnet、nasnet and so on;
+    a.Some classic models on CV, including inception, resnet, mobilenet, vgg, alexnet, nasnet, etc;
     
-    b.Preparing state-of-art models on natural language processing, including Bert、XLnet、NMT、GPT-2;
-    
-* Distributed Plans（Turn to PAI for submitting jobs on PAI Studio or DSW-notebook）
+    b.Preparing more state-of-art models on CV and Natural Language Processing (NLP), including Bert, XLnet, NMT, GPT-2, etc;
 
-    a.Single-Node Multi-GPUs
+* Distributed Training (Turn to Alibaba PAI for submitting jobs on PAI-Studio or PAI-DSW notebook)
+
+    a.Single-Node Multi-GPU
     
-    b.Multi-Nodes Multi-GPUs
-    
+    b.Multi-Node Multi-GPU
+
 * Half-Precision Training
+
 * Task Type
 
     a.Model Pretrain
     
-    b.Model Finetune：Restore only trainable variables default. Gonna to self-defined checkpoint restoring，please turn to get_assigment_map_from_checkpoint in file "images/utils/misc_utils.py".
+    b.Model Finetune：Only restore  trainable variables by default. Please turn to function 'get_assigment_map_from_checkpoint' in file "images/utils/misc_utils.py" for any other requirements.
 
-
-We choose ResNet-v1-50 model and conduct large-scale test on Alibaba Cloud Computing Cluster(GPU P100). As the chart shows，PAISoar performs perfectly with nearly linear acceleration.
+We choose ResNet-v1-50 model and conduct large-scale test on Alibaba Cloud Computing Cluster(GPU P100). As the chart shows，PAISoar performs perfectly with near-linear scaling acceleration.
 
 ![resnet_v1_50](https://pai-online.oss-cn-shanghai.aliyuncs.com/fastnn-data/readme/resnet_v1_50_en.png)
 
 ## 2. Quick Start
 This chaper is all about intructions on FastNN usage without any code modification, including：
-* Data Preparing: Preparing local or PAI-Web training data;
-* Kick-off training: including setting for local shell script or PAI Web training parameters。
+* Data Preparing: Preparing local or PAI Web training data;
+* Kick-off training: Setting for local shell script or PAI Web training parameters。
 
 ### 2.1 Data Preparing
-For the convenience of trying out computer vision models in FastNN model Library, we prepare some open datasets (including cifar10、mnist and flowers) or their relative download_and_convert shell scripts.
-#### 2.1.1 Local datasets
+For the convenience of trying  models in FastNN model Library, we prepare some open datasets (including cifar10, mnist and flowers) or their relative shell scripts for downloading and converting.
 
-Learning from TF-Slim model library, we provide script（images/datasets/download_and_convert_data.py）for downloading and converting to TFRecord format. Take cifar10 for example, script as following:
+#### 2.1.1 Local datasets
+Learning from TF-Slim model library, we provide  'images/datasets/download_and_convert_data.py' for downloading and converting to TFRecord format. Take cifar10 for example, script as following:
 ```
 DATA_DIR=/tmp/data/cifar10
 python download_and_convert_data.py \
 	--dataset_name=cifar10 \
 	--dataset_dir="${DATA_DIR}"
 ```
-After script executed，we will get the following tfrecord files in /tmp/data/cifar10:
->$ ls ${DATA_DIR}
+We will get the following tfrecord files in /tmp/data/cifar10 after running the script above:
+```
+$ ls ${DATA_DIR}
+cifar10_train.tfrecord
+cifar10_test.tfrecord
+labels.txt
+```
 
->cifar10_train.tfrecord
-
->cifar10_test.tfrecord
-
->labels.txt
-
-#### 2.1.2 OSS dataset
-
-For the convenience of trying out FastNN model library on [PAI](https://data.aliyun.com/product/learn?spm=5176.12825654.eofdhaal5.143.2cc52c4af9oxZf), we already download and convert some datasets into TFRecord format, including cifar10、mnist、flowers, and can be accessed by oss api in PAI, oss path shows as:
+#### 2.1.2 OSS datasets
+For the convenience of trying  FastNN model library on [Alibaba PAI](https://data.aliyun.com/product/learn?spm=5176.12825654.eofdhaal5.143.2cc52c4af9oxZf), we already download some datasets and convert them into TFRecord format, including cifar10, mnist, flowers. They can be accessed by oss api in PAI,  and their oss paths show as:
 
 |dataset|num of classes|training set|test set|storage path|
 | :-----: | :----: | :-----:| :----:| :---- |
@@ -65,21 +63,21 @@ For the convenience of trying out FastNN model library on [PAI](https://data.ali
 | flowers |  5     |60000   |10000  | BeiJing：oss://pai-online-beijing.oss-cn-beijing-internal.aliyuncs.com/fastnn-data/flowers/ ShangHai：oss://pai-online.oss-cn-shanghai-internal.aliyuncs.com/fastnn-data/flowers/
 
 ### 2.2 Kick-off Training
-The main file in FastNN is 'train_image_classifiers.py'. User parameters, Model base parameters as well as relative instructions are summaried in file 'flags.py'. 
-For more information, turn to chapter 3. Among all params, the most common six params are listed as the following:
-* task_type：String type. options among ['pretrain', 'finetune'], which clarifies task is 'pretrain' or 'finetune', default 'pretrain';
-* enable_paisoar：Bool type. Default True，when trying out locally, should set False;
-* dataset_name：String type. Indicating training dataset, like files 'cifar10.py、flowers.py、mnist.py' in 'images/datasets', default mock;
+The main file in FastNN is 'train_image_classifiers.py'. User parameters as well as  relative instructions are summarized in file 'flags.py'.
+For more information, please turn to chapter 3. Among all params, the most common six params are listed as  following:
+* task_type：String type. Clarifying whether 'pretrain' or 'finetune', 'pretrain' by default;
+* enable_paisoar：Bool type.  True by default，when trying FastNN locally, should be set False;
+* dataset_name：String type. Indicating training dataset, like files 'cifar10.py, flowers.py, mnist.py' in 'images/datasets', 'mock' by default;
 * train_files：String type. Indicating names of all training files separated by comma, default None;
-* dataset_dir：String type. Indicating training dataset directory, default None;
-* model_name：String type. Indicating model name, options among ['resnet_v1_50', 'vgg', 'inception']，for more info, check images/models;
-Particularly, if task_type is 'finetune', model_dir and ckpt_file_name need to be assigned correctly, which indicates checkpoint dir and checkpoint file name respectively。
+* dataset_dir：String type. Indicating training dataset directory, None by default;
+* model_name：String type. Indicating model name, options among ['resnet_v1_50', 'vgg', 'inception']，for more information, check images/models;
+
+Particularly, if task_type is 'finetune', model_dir and ckpt_file_name need also be specified, which indicates checkpoint dir and checkpoint file name respectively。
 
 We provide instructions for FastNN model libraty on "Local Trial" and "PAI Trial" as following.
 
 #### 2.2.1 Local Trial
-
-FastNN for now does not support PAISoar locally, wrt. no support for local distribution. If only for single-gpu training task, user param 'enable_paisoar' should set False, and software requirements lists:
+For now, the initial version of FastNN  does not support PAISoar locally. If only for single-gpu training task, user param 'enable_paisoar' should set False, and software requirements lists:
 
 |software|version|
 | :-----: | :----: |
@@ -88,9 +86,8 @@ FastNN for now does not support PAISoar locally, wrt. no support for local distr
 |CUDA|>= 9.0|
 |cuDNN| >= 7.0|
 
-We take training task of Resnet-v1-50 on cifar10 for example to clarify local trial mannual。
+We take training task of Resnet-v1-50 on cifar10 for example to clarify local trial mannual.
 ##### 2.2.1.1 Pretrain Shell Script
-
 ```
 DATASET_DIR=/tmp/data/cifar10
 TRAIN_FILES=cifar10_train.tfrecord
@@ -103,7 +100,6 @@ python train_image_classifiers.py \
 	--model_name=resnet_v1_50
 ```
 ##### 2.2.1.2 Finetune Shell Script
-
 ```
 MODEL_DIR=/path/to/model_ckpt
 CKPT_FILE_NAME=resnet_v1_50.ckpt
@@ -121,21 +117,19 @@ python train_image_classifiers.py \
 ```
 
 #### 2.2.2 PAI Trial
-PAI supports several state-of-art frameworks, including TensorFlow(compatible with community version of 1.4 and 1.8), MXNet(0.9.5), Caffe(rc3). However, only tensorflow applies built-in PAISoar and support distributed training of multi-gpus and multi-nodes. For mannual, please turn to [FastNN-On-PAI](https://yuque.antfin-inc.com/docs/share/48c723cf-eef0-4da4-8bb9-090300832ffd).
+PAI supports several state-of-art frameworks, including TensorFlow(compatible with community version of 1.4 and 1.8), MXNet(0.9.5), Caffe(rc3). For TensorFlow users, PAI provides a built-in PAISoar component for distribution training. For mannual, please turn to [FastNN-On-PAI](https://yuque.antfin-inc.com/docs/share/48c723cf-eef0-4da4-8bb9-090300832ffd)。
 
 ## 3. User Parameters Intructions
-Chapter 2.2 explains some most import params, While still many params stay unknown to users. FastNN model library integrates requirements form models and PAISoar, summarizes params in file 'flags.py'(which also allows new params self-defined), which can be divided into 6 parts:
-
-* Dataset Option: Specific training dataset, such as 'dataset_dir' indicating training dataset directory;
+Chapter 2.2 clarifies some most important parameters, While still many params stay unknown to users. FastNN model library integrates requirements of models with PAISoar component, and summarizes all params in file 'flags.py'(you can also define new params). All existing parameters could be divided into six parts:
+* Dataset Option: Specific basic information about training dataset, such as 'dataset_dir' indicating training dataset directory;
 * Dataset PreProcessing Option: Specific preprocessing func and params on dataset pipeline;
-* Model Params Option: Specific model base params, including model_name、batch_size;
+* Model Params Option: Specific model base params, including model_name, batch_size;
 * Learning Rate Tuning: Specific learning rate and relative tuning params;
 * Optimizer Option: Specific optimizer and relative tuning params;
 * Logging Option: Specific params for logging;
 * Performance Tuning: Specific half-precision and other relative tuning params.
 
 ### 3.1 Dataset Option
-
 |#Name|#Type|#Description|
 | :-----: | :----: | :-----|
 |dataset_name|string|Indicating dataset name, default mock|
@@ -145,7 +139,6 @@ Chapter 2.2 explains some most import params, While still many params stay unkno
 |train_files|string|String of name of all training files separated by comma, such as"0.tfrecord,1.tfrecord"|
 
 ### 3.2 Dataset Preprocessing Tuning
-
 |#Name|#Type|#Description|
 | :-----: | :----: | :-----|
 |preprocessing_name|string|Preprocessing func name, defult None|
@@ -156,7 +149,6 @@ Chapter 2.2 explains some most import params, While still many params stay unkno
 |datasets_use_caching|bool|Cache the compressed input data in memory. This improves the data input performance, at the cost of additional memory|
 
 ### 3.3 Model Params Option
-
 |#Name|#Type|#Description|
 | :-----: | :----: | :-----|
 |task_type|string|support pretrain or finetune, default pretrain|
@@ -169,7 +161,6 @@ Chapter 2.2 explains some most import params, While still many params stay unkno
 |ckpt_file_name|string|Initial checkpoint (pre-trained model: base_dir + model.ckpt).|
 
 ### 3.4 Learning Rate Tuning
-
 |#Name|#Type|#Description|
 | :-----: | :----: | :-----|
 |warmup_steps|integer|how many steps we inverse-decay learning. default 0.|
@@ -181,7 +172,6 @@ Chapter 2.2 explains some most import params, While still many params stay unkno
 |end_learning_rate|float|Lower bound for learning rate when decay not disabled, default 0.0001|
 
 ### 3.5 Optimizer Option
-
 |#Name|#Type|#Description|
 | :-----: | :----: | :-----|
 |optimizer|string|the name of the optimizer, one of "adadelta", "adagrad", "adam", "ftrl", "momentum", "sgd" or "rmsprop". Default "rmsprop"|
@@ -199,7 +189,6 @@ Chapter 2.2 explains some most import params, While still many params stay unkno
 |rmsprop_decay|float|Decay term for RMSProp, default 0.9|
 
 ### 3.6 Logging Option
-
 |#Name|#Type|#Description|
 | :-----: | :----: | :-----|
 |stop_at_step|integer|the whole training steps, default 100|
@@ -211,7 +200,6 @@ Chapter 2.2 explains some most import params, While still many params stay unkno
 |hooks|string|specify hooks for training, default "StopAtStepHook,ProfilerHook,LoggingTensorHook,CheckpointSaverHook"|
 
 ### 3.7 Performanse Tuning Option
-
 |#Name|#Type|#Description|
 | :-----: | :----: | :-----|
 |use_fp16|bool|whether to train with fp16, default True|
@@ -220,8 +208,7 @@ Chapter 2.2 explains some most import params, While still many params stay unkno
 |protocol|string|default grpc.For rdma cluster, use grpc+verbs instead|
 
 ## 4. Self-defined Model Exploration
-
-If existing models can't meet your requirements, we allow inheriting dataset／models／preprocessing api for self-defined exploration. Before that, you may need to understand overall code architecture of FastNN model library(taking 'images' models for example, whose main func file is 'train_image_classifiers.py'):
+If existing models can't meet your requirements, we allow inheriting dataset／models／preprocessing api for self-defined exploration. Before that, you may need to understand overall code architecture of FastNN model library(taking 'images' models for example, whose main  file is 'train_image_classifiers.py'):
 
 ```
 # Initialize some model in models for network_fn, and may carries param 'train_image_size'
@@ -256,11 +243,22 @@ If existing models can't meet your requirements, we allow inheriting dataset／m
 ```
 
 ### 4.1 For New Dataset
-**FastNN model library has supported direct access to dataset of tfrecord format**，and implements dataset pipeline based on TFRecordDataset for model training. If your datasets are some other formats, dataset pipeline should be rewritten(reference utils/dataset_utils.py). In addition, data-spliting is not finely implements, FastNN requires number of training files can be divided by number of workers and number of samples among training files is even. For example, cifar10、mnist training dataset only works in distributed jobs of multi-gpus, thus requires all samples can be allocated evenly among all workers.
+**FastNN model library has supported direct access to dataset of tfrecord format**，and implements dataset pipeline based on TFRecordDataset for model training(utils/dataset_utils.py), helps to cover cost of sample preparing.
+In addition, data-spliting is not finely implemented, FastNN requires:
+* The number of training files can be divided by number of workers;
+* The number of samples among training files is even.
 
-If your dataset file is format of tfrecord, please reference files cifar10/mnist/flowers in 'datasets'.
-* If set 'dataset_name cifar10', then create a new file 'cifar10.py' in 'datasets' as following:
-
+If your dataset file is format of tfrecord, please reference files cifar10/mnist/flowers in 'datasets', take cifar10 for example:
+* Assume key_to_features of cifar10 to be:
+```
+features={
+        'image/encoded': tf.FixedLenFeature((), tf.string, default_value=''),
+        'image/format': tf.FixedLenFeature((), tf.string, default_value='png'),
+        'image/class/label': tf.FixedLenFeature(
+          [], tf.int64, default_value=tf.zeros([], dtype=tf.int64)),
+}
+```
+* Create a new file 'cifar10.py' in 'datasets' and edit as following:
 ```python
 """Provides data for the Cifar10 dataset.
 The dataset scripts used to create the dataset can be found at:
@@ -287,9 +285,16 @@ def parse_fn(example):
     label = features['image/class/label']
     return image, label
 ```
-
 * Supplement 'dataset_map' in file 'datasets/dataset_factory.py'
-* When run scripts, user need set 'train_files'(refer to chapter 3.1)
+```
+from datasets import cifar10
+datasets_map = {
+    'cifar10': cifar10,
+}
+```
+* When executing scripts, you need set 'dataset_name' to be 'cifar10' and 'train_files' to be 'cifar10_train.tfrecord' for model training.
+
+If your datasets are some other formats, dataset pipeline may need to update.
 
 ### 4.2 For New Model
 For exploration of new models, please turn to files in 'images/models':
@@ -320,10 +325,10 @@ For 'images' in FastNN model library, as main file 'train_image_classifiers.py' 
 You can directly modify 'loss_fn' in 'train_image_classifiers.py'. However, when trying out distributed training jobs with PAISoar, 'loss_fn' returns loss only which is limited unchangable. Any other variables can be passed globally as accuracy returned in 'loss_fn' of 'train_image_classifiers.py'.
 
 ## 5. Acknowledgements
-FastNN is run as a open-source project to indicate our contribution to distributed model library based on PAISoar. We believe FastNN allow researchers to most effectively explore various neural networks, and support faster data parallelism. 
+FastNN is an opensource project to indicate our contribution to distributed model library based on PAISoar. We believe FastNN allow researchers to most effectively explore various neural networks, and support faster data parallelism.
 We will carry on with more innovation work on distribution, including model parallelism and gradient compression and so on.
 
-FastNN for now includes only some state-of-art models on computer vision. However, models of NLP(Bert、XLNet、GPT-2、NMT) are comming soon. 
+FastNN for now includes only some state-of-art models on computer vision. Models on NLP (Bert, XLNet, GPT-2, NMT, etc)  or other fileds are comming soon.
 
 FastNN now focuses on data parallelism, all models in 'images/models' are noted from [TensorFlow-Slim image classification model library](https://github.com/tensorflow/models/tree/master/research/slim#tensorflow-slim-image-classification-model-library).
-Thanks to TensorFlow community for implementation of these models. If any questions, please email me whenever you would like.
+Thanks to TensorFlow community for implementation of these models. If any questions, please email us whenever you would like.
