@@ -66,11 +66,11 @@ For the convenience of trying  FastNN model library on [Alibaba PAI](https://dat
 The main file in FastNN is 'train_image_classifiers.py'. User parameters as well as  relative instructions are summarized in file 'flags.py'.
 For more information, please turn to chapter 3. Among all params, the most common six params are listed as  following:
 * task_type：String type. Clarifying whether 'pretrain' or 'finetune', 'pretrain' by default;
-* enable_paisoar：Bool type.  True by default，when trying FastNN locally, should be set False;
+* enable_paisoar：Bool type.  True by default, when trying FastNN locally, should be set False;
 * dataset_name：String type. Indicating training dataset, like files 'cifar10.py, flowers.py, mnist.py' in 'images/datasets', 'mock' by default;
 * train_files：String type. Indicating names of all training files separated by comma, default None;
 * dataset_dir：String type. Indicating training dataset directory, None by default;
-* model_name：String type. Indicating model name, options among ['resnet_v1_50', 'vgg', 'inception']，for more information, check images/models;
+* model_name：String type. Indicating model name, options among ['resnet_v1_50', 'vgg', 'inception'], for more information, check images/models;
 
 Particularly, if task_type is 'finetune', model_dir and ckpt_file_name need also be specified, which indicates checkpoint dir and checkpoint file name respectively.
 
@@ -117,7 +117,8 @@ python train_image_classifiers.py \
 ```
 
 #### 2.2.2 PAI Trial
-PAI supports several state-of-art frameworks, including TensorFlow(compatible with community version of 1.4 and 1.8), MXNet(0.9.5), Caffe(rc3). For TensorFlow users, PAI provides a built-in PAISoar component for distribution training. For mannual, please turn to [FastNN-On-PAI](https://yuque.antfin-inc.com/docs/share/48c723cf-eef0-4da4-8bb9-090300832ffd)。
+PAI supports several state-of-art frameworks, including TensorFlow(compatible with community version of 1.4 and 1.8), MXNet(0.9.5), Caffe(rc3). For TensorFlow users, PAI provides a built-in PAISoar component for distribution training. For mannual, please turn to [FastNN-On-PAI](https://yuque.antfin-inc.com/docs/share/48c723cf-eef0-4da4-8bb9-090300832ffd).
+
 
 ## 3. User Parameters Intructions
 Chapter 2.2 clarifies some most important parameters, While still many params stay unknown to users. FastNN model library integrates requirements of models with PAISoar component, and summarizes all params in file 'flags.py'(you can also define new params). All existing parameters could be divided into six parts:
@@ -152,8 +153,8 @@ Chapter 2.2 clarifies some most important parameters, While still many params st
 |#Name|#Type|#Description|
 | :-----: | :----: | :-----|
 |task_type|string|support pretrain or finetune, default pretrain|
-|model_name|string|Indicating name of model，default inception_resnet_v2|
-|num_epochs|integer|Number of training epochs，default 100|
+|model_name|string|Indicating name of model, default inception_resnet_v2|
+|num_epochs|integer|Number of training epochs, default 100|
 |weight_decay|float|The weight decay on the model weights, default 0.00004|
 |max_gradient_norm|float|clip gradient to this global norm, default None for clip-by-global-norm diabled|
 |batch_size|integer|The number of samples in each batch, default 32|
@@ -204,7 +205,7 @@ Chapter 2.2 clarifies some most important parameters, While still many params st
 | :-----: | :----: | :-----|
 |use_fp16|bool|whether to train with fp16, default True|
 |loss_scale|float|loss scale value for training, default 1.0|
-|enable_paisoar|bool|whether or not to use pai soar，default True.|
+|enable_paisoar|bool|whether or not to use pai soar, default True.|
 |protocol|string|default grpc.For rdma cluster, use grpc+verbs instead|
 
 ## 4. Self-defined Model Exploration
@@ -221,12 +222,12 @@ If existing models can't meet your requirements, we allow inheriting dataset／m
     preprocessing_fn = preprocessing_factory.get_preprocessing(
                 FLAGS.model_name or FLAGS.preprocessing_name,
                 is_training=(FLAGS.task_type in ['pretrain', 'finetune']))
-# According to dataset_name，choose right tfrecord for training dataset, and call preprocess_fn to parse training dataset
+# According to dataset_name, choose right tfrecord for training dataset, and call preprocess_fn to parse training dataset
     dataset_iterator = dataset_factory.get_dataset_iterator(FLAGS.dataset_name,
                                                             train_image_size,
                                                             preprocessing_fn,
                                                             data_sources,
-# Based on network_fn、dataset_iterator，define loss_fn
+# Based on network_fn、dataset_iterator, define loss_fn
     def loss_fn():
     	with tf.device('/cpu:0'):
       		images, labels = dataset_iterator.get_next()
@@ -243,7 +244,7 @@ If existing models can't meet your requirements, we allow inheriting dataset／m
 ```
 
 ### 4.1 For New Dataset
-**FastNN model library has supported direct access to dataset of tfrecord format**，and implements dataset pipeline based on TFRecordDataset for model training(utils/dataset_utils.py), helps to cover cost of sample preparing.
+**FastNN model library has supported direct access to dataset of tfrecord format**, and implements dataset pipeline based on TFRecordDataset for model training(utils/dataset_utils.py), helps to cover cost of sample preparing.
 In addition, data-spliting is not finely implemented, FastNN requires:
 * The number of training files can be divided by number of workers;
 * The number of samples among training files is even.
