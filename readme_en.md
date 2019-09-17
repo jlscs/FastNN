@@ -133,55 +133,57 @@ Chapter 2.2 clarifies some most important parameters, While still many params st
 ### 3.1 Dataset Option
 |#Name|#Type|#Description|
 | :-----: | :----: | :-----|
-|dataset_name|string|Indicating dataset name, default mock|
-|dataset_dir|string|Indicating path to input dataset, default None|
-|num_sample_per_epoch|integer|Total num of samples in training dataset|
+|dataset_name|string|Indicating dataset name, Value options include: 'mock', 'cifar10', 'mnist', 'flowers', we choose 'mock' for pseudo data by default.|
+|dataset_dir|string|Indicating path to input dataset, we set None by default for pseudo data.|
+|num_sample_per_epoch|integer|Total num of samples in training dataset, which helps for decay of learning rate commonly.|
 |num_classes|integer|Classes of training dataset, default 100|
 |train_files|string|String of name of all training files separated by comma, such as"0.tfrecord,1.tfrecord"|
+
+
 
 ### 3.2 Dataset Preprocessing Tuning
 |#Name|#Type|#Description|
 | :-----: | :----: | :-----|
-|preprocessing_name|string|Preprocessing func name, defult None|
+|preprocessing_name|string|Collaborating with 'model_name' to define preprocessing function, you can refer to file 'preprocessing_factory.py' in 'images/preprocessing' for value options, we set it be None by default.|
 |shuffle_buffer_size|integer|shuffle buffer size of training dataset, default 1024|
-|num_parallel_batches|integer|Product with batch_size indicates value of map_and_batch, default 8|
-|prefetch_buffer_size|integer|Prefetch N batches data into dataset pipeline, default N 32|
-|num_preprocessing_threads|integer|Number of preprocessing threads, default 16|
+|num_parallel_batches|integer|Product with batch_size specifies number of map_and_batch threads, we set it be 8 by default.|
+|prefetch_buffer_size|integer|Numbert of batch data to be prefetched for dataset pipeline, we set it be 32 by default.|
+|num_preprocessing_threads|integer|Number of preprocessing threads for dataset prefetching, we set it be 16 by default.|
 |datasets_use_caching|bool|Cache the compressed input data in memory. This improves the data input performance, at the cost of additional memory|
 
 ### 3.3 Model Params Option
 |#Name|#Type|#Description|
 | :-----: | :----: | :-----|
-|task_type|string|support pretrain or finetune, default pretrain|
-|model_name|string|Indicating name of model, default inception_resnet_v2|
+|task_type|string|Value options include 'pretrain' and 'finetune', we conduct model pretraining task by default, set it be 'pretrain'.|
+|model_name|string|Indicating which model to be trained on, default inception_resnet_v2, you can refer to file 'model_factory.py' in 'images/models' for value options.|
 |num_epochs|integer|Number of training epochs, default 100|
 |weight_decay|float|The weight decay on the model weights, default 0.00004|
-|max_gradient_norm|float|clip gradient to this global norm, default None for clip-by-global-norm diabled|
-|batch_size|integer|The number of samples in each batch, default 32|
-|model_dir|string|dir of checkpoint for init|
-|ckpt_file_name|string|Initial checkpoint (pre-trained model: base_dir + model.ckpt).|
+|max_gradient_norm|float|Clip gradient to this global norm, default None for clip-by-global-norm diabled|
+|batch_size|integer|The number of samples processed every iteration for one device, default 32|
+|model_dir|string|Dirtory of checkpoint for model finetuning.|
+|ckpt_file_name|string|Collaborating with 'model_dir' to specify absolute path of checkpoint (pre-trained model: model_dir + model.ckpt).|
 
 ### 3.4 Learning Rate Tuning
 |#Name|#Type|#Description|
 | :-----: | :----: | :-----|
-|warmup_steps|integer|how many steps we inverse-decay learning. default 0.|
-|warmup_scheme|string|how to warmup learning rates. Options include:'t2t' refers to Tensor2Tensor way, start with lr 100 times smaller,then exponentiate until the specified lr. default 't2t'|
+|warmup_steps|integer|How many steps we inverse-decay learning. default 0.|
+|warmup_scheme|string|How to warmup learning rates. Options include:'t2t' refers to Tensor2Tensor way, start with lr 100 times smaller,then exponentiate until the specified lr. default 't2t'|
 |decay_scheme|string|How we decay learning rate. Options include:1、luong234: after 2/3 num train steps, we start halving the learning rate for 4 times before finishing;2、luong5: after 1/2 num train steps, we start halving the learning rate for 5 times before finishing;3、luong10: after 1/2 num train steps, we start halving the learning rate for 10 times before finishing.|
-|learning_rate_decay_factor|float|learning rate decay factor, default 0.94|
-|learning_rate_decay_type|string|specifies how the learning rate is decayed. One of ["fixed", "exponential", or "polynomial"], default exponential|
+|learning_rate_decay_factor|float|Learning rate decay factor, default 0.94|
+|learning_rate_decay_type|string|Indicating how the learning rate is decayed. One of ["fixed", "exponential", or "polynomial"], default exponential|
 |learning_rate|float|Starting value for learning rate, default 0.01|
 |end_learning_rate|float|Lower bound for learning rate when decay not disabled, default 0.0001|
 
 ### 3.5 Optimizer Option
 |#Name|#Type|#Description|
 | :-----: | :----: | :-----|
-|optimizer|string|the name of the optimizer, one of "adadelta", "adagrad", "adam", "ftrl", "momentum", "sgd" or "rmsprop". Default "rmsprop"|
-|adadelta_rho|float|the decay rate for adadelta, default 0.95, specially for Adadelta|
-|adagrad_initial_accumulator_value|float|starting value for the AdaGrad accumulators, default 0.1, specially for Adagrada|
-|adam_beta1|float|the exponential decay rate for the 1st moment estimates, default 0.9, specially for Adam|
-|adam_beta2|float|the exponential decay rate for the 2nd moment estimates, default 0.999, specially for Adam|
-|opt_epsilon|float|epsilon term for the optimizer, default 1.0, specially for Adam|
-|ftrl_learning_rate_power|float|the learning rate power, default -0.5, specially for Ftrl|
+|optimizer|string|the name of the optimizer, one of "adadelta", "adagrad", "adam", "ftrl", "momentum", "sgd" or "rmsprop", "adamweightdecay". Set it be "rmsprop" by default.|
+|adadelta_rho|float|The decay rate for adadelta, default 0.95, specially for Adadelta|
+|adagrad_initial_accumulator_value|float|Starting value for the AdaGrad accumulators, default 0.1, specially for Adagrada|
+|adam_beta1|float|The exponential decay rate for the 1st moment estimates, default 0.9, specially for Adam|
+|adam_beta2|float|The exponential decay rate for the 2nd moment estimates, default 0.999, specially for Adam|
+|opt_epsilon|float|Epsilon term for the optimizer, default 1.0, specially for Adam|
+|ftrl_learning_rate_power|float|The learning rate power, default -0.5, specially for Ftrl|
 |ftrl_initial_accumulator_value|float|Starting value for the FTRL accumulators, default 0.1, specially for Ftrl|
 |ftrl_l1|float|The FTRL l1 regularization strength, default 0.0, specially for Ftrl|
 |ftrl_l2|float|The FTRL l2 regularization strength, default 0.0, specially for Ftrl|
@@ -192,21 +194,21 @@ Chapter 2.2 clarifies some most important parameters, While still many params st
 ### 3.6 Logging Option
 |#Name|#Type|#Description|
 | :-----: | :----: | :-----|
-|stop_at_step|integer|the whole training steps, default 100|
-|log_loss_every_n_iters|integer|frequency to print loss info, default 10|
-|profile_every_n_iters|integer|frequency to print timeline, default 0|
-|profile_at_task|integer|node index to output timeline, default 0|
-|log_device_placement|bool|whether or not to log device placement, default False|
-|print_model_statistics|bool|whether or not to print trainable variables info, default false|
-|hooks|string|specify hooks for training, default "StopAtStepHook,ProfilerHook,LoggingTensorHook,CheckpointSaverHook"|
+|stop_at_step|integer|Indicating number of training steps, default 100|
+|log_loss_every_n_iters|integer|Frequency for outputing loss info, default 10|
+|profile_every_n_iters|integer|Frequency for outputing timeline, default 0|
+|profile_at_task|integer|Node index to output timeline, default 0|
+|log_device_placement|bool|Indicating whether or not to log device placement, default False|
+|print_model_statistics|bool|Indicating whether or not to print trainable variables info, default false|
+|hooks|string|Indicating hooks for training, default "StopAtStepHook,ProfilerHook,LoggingTensorHook,CheckpointSaverHook"|
 
 ### 3.7 Performanse Tuning Option
 |#Name|#Type|#Description|
 | :-----: | :----: | :-----|
-|use_fp16|bool|whether to train with fp16, default True|
-|loss_scale|float|loss scale value for training, default 1.0|
-|enable_paisoar|bool|whether or not to use pai soar, default True.|
-|protocol|string|default grpc.For rdma cluster, use grpc+verbs instead|
+|use_fp16|bool|Indicating whether to train with fp16, default True|
+|loss_scale|float|Loss scale value for training, default 1.0|
+|enable_paisoar|bool|Indicating whether or not to use pai soar, default True.|
+|protocol|string|Default grpc.For rdma cluster, use grpc+verbs instead|
 
 ## 4. Self-defined Model Exploration
 If existing models can't meet your requirements, we allow inheriting dataset／models／preprocessing api for self-defined exploration. Before that, you may need to understand overall code architecture of FastNN model library(taking 'images' models for example, whose main  file is 'train_image_classifiers.py'):
